@@ -17,7 +17,7 @@ const gradientBg =
 const contact = {
   email: 'visaservice.eurolink@gmail.com',
   phonePrimary: '9707145321',
-  phoneSecondary: '1-4521522',
+  phoneSecondary: '01-4521522',
 };
 
 const useIsMobile = () => {
