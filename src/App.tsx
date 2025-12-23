@@ -843,19 +843,6 @@ const ConsultationForm = ({
     setStatus('loading');
     setMessage('');
 
-    if (typeof window !== 'undefined') {
-      const last = localStorage.getItem('eurolink_last_submission');
-      if (last) {
-        const elapsed = Date.now() - Number(last);
-        const oneDay = 24 * 60 * 60 * 1000;
-        if (elapsed < oneDay) {
-          setStatus('error');
-          setMessage('You can submit once per day from this device. Please try again tomorrow.');
-          return;
-        }
-      }
-    }
-
     if (!supabase) {
       setStatus('error');
       setMessage('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
@@ -867,25 +854,22 @@ const ConsultationForm = ({
       phone: formState.phone,
       email: formState.email,
       visa_type: formState.type,
-      device_id: deviceId ?? 'unknown',
       source: 'landing-form',
     };
 
     const { error } = await supabase.from('schedule_bookings').insert(payload);
-
     if (error) {
-      console.error('Supabase insert error:', error.message);
+      // expose detailed error locally to help debugging (safe in dev)
+      console.error('Supabase insert error full:', error);
       setStatus('error');
-      setMessage('Could not submit right now. Please retry in a moment.');
+      const detail = error.message || JSON.stringify(error);
+      setMessage(import.meta.env.DEV ? `Insert failed: ${detail}` : 'Could not submit right now. Please retry in a moment.');
       return;
     }
 
     setStatus('success');
     setMessage('Submitted! Our consultants will reach out shortly.');
     setFormState({ name: '', phone: '', email: '', type: 'Student Visa' });
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('eurolink_last_submission', String(Date.now()));
-    }
   };
 
   return (
