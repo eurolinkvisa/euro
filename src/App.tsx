@@ -859,11 +859,16 @@ const ConsultationForm = ({
 
     const { error } = await supabase.from('schedule_bookings').insert(payload);
     if (error) {
-      // expose detailed error locally to help debugging (safe in dev)
+      // Log full error to console for debugging
       console.error('Supabase insert error full:', error);
       setStatus('error');
-      const detail = error.message || JSON.stringify(error);
-      setMessage(import.meta.env.DEV ? `Insert failed: ${detail}` : 'Could not submit right now. Please retry in a moment.');
+
+      // When debugging locally (dev) or when the VITE_SHOW_SUBMIT_ERRORS flag is set,
+      // surface the detailed error in the UI to make it easier to diagnose problems
+      // (Caution: don't enable in public production sites).
+      const detail = (error as any)?.message ?? JSON.stringify(error);
+      const showErrors = import.meta.env.DEV || import.meta.env.VITE_SHOW_SUBMIT_ERRORS === 'true';
+      setMessage(showErrors ? `Insert failed: ${detail}` : 'Could not submit right now. Please retry in a moment.');
       return;
     }
 
