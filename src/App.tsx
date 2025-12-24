@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent, RefObject } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { FiPhone, FiMail, FiInstagram, FiX } from 'react-icons/fi';
+import { FiPhone, FiMail, FiInstagram } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
 import { FaFacebookF } from 'react-icons/fa';
 import { SiTiktok } from 'react-icons/si';
@@ -826,69 +826,46 @@ const Testimonials = ({ onViewStories }: { onViewStories?: () => void }) => {
   );
 };
 
-const StoriesPage = ({ onClose }: { onClose: () => void }) => {
-  const [activeImage, setActiveImage] = useState<string | null>(null);
-
-  return (
-    <div className="min-h-screen bg-midnight text-white">
-      <div className="container py-10">
-        <div className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.4em] text-white/60">Success stories</p>
-              <h1 className="text-4xl font-semibold text-white">Gallery of approved journeys</h1>
-              <p className="text-white/70">
-                A curated collection of the people and moments that define EuroLink’s premium visa experiences.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <button type="button" onClick={onClose} className="btn-ghost">
-                ← Back to the landing page
-              </button>
-            </div>
+const StoriesPage = ({ onClose }: { onClose: () => void }) => (
+  <div className="min-h-screen bg-midnight text-white">
+    <div className="container py-10">
+      <div className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.4em] text-white/60">Success stories</p>
+            <h1 className="text-4xl font-semibold text-white">Gallery of approved journeys</h1>
+            <p className="text-white/70">
+              A curated collection of the people and moments that define EuroLink’s premium visa experiences.
+            </p>
           </div>
-          <div className="mt-6 text-sm text-white/70">
-            Tap any story to expand it and enjoy the full photo.
+          <div className="flex flex-wrap items-center gap-3">
+            <button type="button" onClick={onClose} className="btn-ghost">
+              ← Back to the landing page
+            </button>
           </div>
         </div>
-
-  <div className="mt-8 grid grid-cols-3 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-          {storyImages.map((src, idx) => (
-            <button
-              key={src}
-              type="button"
-              aria-label={`Preview story ${idx + 1}`}
-              onClick={() => setActiveImage(src)}
-              className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-0 text-left transition hover:border-white/40"
-            >
-              <img
-                src={src}
-                alt="EuroLink success story"
-                className="h-36 w-full object-cover transition duration-300 ease-out hover:scale-105 sm:h-40 md:h-44 lg:h-48"
-              />
-            </button>
-          ))}
+        <div className="mt-6 text-sm text-white/70">
+          Tap any story to browse the curated gallery.
         </div>
       </div>
 
-      {activeImage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-          <div className="relative max-w-[96vw] max-h-[96vh] w-full overflow-hidden rounded-[32px] border border-white/10 bg-midnight/80 shadow-2xl">
-            <button
-              type="button"
-              onClick={() => setActiveImage(null)}
-              className="absolute right-4 top-4 rounded-full border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white/20"
-              aria-label="Close preview"
-            >
-              <FiX size={20} />
-            </button>
-            <img src={activeImage} alt="Expanded success story" className="h-full w-full object-contain" />
+      <div className="mt-8 grid grid-cols-3 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        {storyImages.map((src) => (
+          <div
+            key={src}
+            className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-0 text-left transition hover:border-white/40"
+          >
+            <img
+              src={src}
+              alt="EuroLink success story"
+              className="h-36 w-full object-cover transition duration-300 ease-out sm:h-40 md:h-44 lg:h-48"
+            />
           </div>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
-  );
-};
+  </div>
+);
 
 const ConsultationForm = ({
   formRef,
