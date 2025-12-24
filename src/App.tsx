@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent, RefObject } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { FiPhone, FiMail, FiInstagram } from 'react-icons/fi';
+import { FiPhone, FiMail, FiInstagram, FiX } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
 import { FaFacebookF } from 'react-icons/fa';
 import { SiTiktok } from 'react-icons/si';
@@ -19,6 +19,21 @@ const contact = {
   phonePrimary: '9707145321',
   phoneSecondary: '01-4521522',
 };
+
+const storyAssets = import.meta.glob('../stories/*.jpg', { eager: true }) as Record<string, { default: string }>;
+
+const extractStoryNumber = (path: string) => {
+  const match = path.match(/story(\d+)/i);
+  return match ? Number(match[1]) : Number.POSITIVE_INFINITY;
+};
+
+const storyImages = Object.entries(storyAssets)
+  .sort(([a], [b]) => {
+    const numberDiff = extractStoryNumber(a) - extractStoryNumber(b);
+    if (numberDiff !== 0) return numberDiff;
+    return a.localeCompare(b);
+  })
+  .map(([, module]) => module.default);
 
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -155,7 +170,7 @@ const Hero = () => {
               </a>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm text-white/70 sm:max-w-md sm:grid-cols-2">
-              {[{ label: 'Success Rate', value: '98%' }, { label: 'Live Support', value: '24/7' }].map((item) => (
+              {[{ label: 'Success Rate', value: '89%' }, { label: 'Live Support', value: '24/7' }].map((item) => (
                 <div key={item.label} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <div className="text-2xl font-semibold text-white">{item.value}</div>
                   <div className="text-xs uppercase tracking-[0.2em] text-white/50">{item.label}</div>
@@ -401,7 +416,7 @@ const Services = ({ onBook }: { onBook: (visaType: VisaType) => void }) => {
 
 const WhyChoose = () => {
   const pillars = [
-    { title: '98% approval guidance', desc: 'Dual-review checklists, airtight documents, and risk flags resolved before filing.' },
+    { title: '89% approval guidance', desc: 'Dual-review checklists, airtight documents, and risk flags resolved before filing.' },
     { title: 'Transparent timelines', desc: 'Milestone dashboards and proactive updates across every stage.' },
     { title: 'Interview mastery', desc: 'Mock interviews, embassy-style Q&A, and body-language coaching.' },
     { title: 'Trusted partners', desc: 'Universities, employers, and embassies across UK, Australia, Europe, USA.' },
@@ -718,7 +733,7 @@ const HowItWorks = () => {
   );
 };
 
-const Testimonials = () => {
+const Testimonials = ({ onViewStories }: { onViewStories?: () => void }) => {
   const testimonials = [
     {
       name: 'Aarav, London',
@@ -796,8 +811,82 @@ const Testimonials = () => {
             ))}
           </div>
         </div>
+        <div className="mt-10 flex justify-center">
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => onViewStories?.()}
+          >
+            View Success Stories
+            <span className="ml-2 text-lg">→</span>
+          </button>
+        </div>
       </div>
     </section>
+  );
+};
+
+const StoriesPage = ({ onClose }: { onClose: () => void }) => {
+  const [activeImage, setActiveImage] = useState<string | null>(null);
+
+  return (
+    <div className="min-h-screen bg-midnight text-white">
+      <div className="container py-10">
+        <div className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.4em] text-white/60">Success stories</p>
+              <h1 className="text-4xl font-semibold text-white">Gallery of approved journeys</h1>
+              <p className="text-white/70">
+                A curated collection of the people and moments that define EuroLink’s premium visa experiences.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <button type="button" onClick={onClose} className="btn-ghost">
+                ← Back to the landing page
+              </button>
+            </div>
+          </div>
+          <div className="mt-6 text-sm text-white/70">
+            Tap any story to expand it and enjoy the full photo.
+          </div>
+        </div>
+
+  <div className="mt-8 grid grid-cols-3 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          {storyImages.map((src, idx) => (
+            <button
+              key={src}
+              type="button"
+              aria-label={`Preview story ${idx + 1}`}
+              onClick={() => setActiveImage(src)}
+              className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-0 text-left transition hover:border-white/40"
+            >
+              <img
+                src={src}
+                alt="EuroLink success story"
+                className="h-36 w-full object-cover transition duration-300 ease-out hover:scale-105 sm:h-40 md:h-44 lg:h-48"
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {activeImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+          <div className="relative max-w-[96vw] max-h-[96vh] w-full overflow-hidden rounded-[32px] border border-white/10 bg-midnight/80 shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setActiveImage(null)}
+              className="absolute right-4 top-4 rounded-full border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white/20"
+              aria-label="Close preview"
+            >
+              <FiX size={20} />
+            </button>
+            <img src={activeImage} alt="Expanded success story" className="h-full w-full object-contain" />
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -1101,6 +1190,7 @@ const App = () => {
   const lenisRef = useRef<Lenis | null>(null);
   const consultationRef = useRef<HTMLElement | null>(null);
   const [prefillType, setPrefillType] = useState<VisaType | null>(null);
+  const [isStoriesOpen, setIsStoriesOpen] = useState(false);
 
   useEffect(() => {
     const lenis = new Lenis({ smoothWheel: true, lerp: 0.12 });
@@ -1143,6 +1233,10 @@ const App = () => {
     };
   }, []);
 
+  if (isStoriesOpen) {
+    return <StoriesPage onClose={() => setIsStoriesOpen(false)} />;
+  }
+
   const handleBookSlot = (visaType: VisaType) => {
     setPrefillType(visaType);
     consultationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1156,7 +1250,7 @@ const App = () => {
         <Services onBook={handleBookSlot} />
         <WhyChoose />
         <HowItWorks />
-        <Testimonials />
+  <Testimonials onViewStories={() => setIsStoriesOpen(true)} />
         <ConsultationForm
           formRef={consultationRef}
           prefillType={prefillType}
