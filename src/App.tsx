@@ -639,7 +639,7 @@ const HowItWorks = () => {
       <div className="container">
         <SectionHeading
           eyebrow="How it works"
-          title="Timelines by visa type"
+          title="Switchable timelines by visa type"
           subtitle="Pick the visa category, then dive into the exact steps."
         />
 
